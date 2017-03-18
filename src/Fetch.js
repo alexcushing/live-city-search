@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Ticket from './Ticket.js';
-
+import Perimeter from 'react-perimeter'
 const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 const cities = [];
 
@@ -8,7 +8,18 @@ class Fetch extends Component {
 
   constructor(props){
       super(props);
-      this.state = {current : "", results: []};
+      this.state = {current : "", results: [], showSearch: true};
+    }
+
+    fire = () => {
+      this.setState({showSearch: false});
+      // setTimeout(() => {
+      //   this.setState({showSearch: false});
+      // }, 500)
+    }
+
+    fireBack = () => {
+      this.setState({showSearch: true});
     }
 
   onChange = (e) => {
@@ -39,22 +50,41 @@ class Fetch extends Component {
   render() {
     return (
       <div className="appBody">
+        {
+          this.state.showSearch ?
         <input
+          autoFocus
           type="text"
           onChange={this.onChange}
           value={this.state.current}
-          className="search hover"
-          placeholder="search for a city or state"
-        />
-        <ul className="results">
+          className="search hover focusNow"
+          placeholder='search for a city or state'
+        /> : <Perimeter padding={0} onBreach={this.fireBack} className="searchAgain">
+          {/* <div>🔍</div> */}
+          <input
+            autoFocus
+            type="text"
+            onChange={this.onChange}
+            value={this.state.current}
+            className="search hover notFocus"
+            placeholder="search for a city or state"
+          />
+         </Perimeter>
+      }
         {
-          this.state.results.map((v, i) => {
-            return(
-              <Ticket name={v} index={i} />
-            )
-          })
-        }
-        </ul>
+          this.state.results.length != 0 ?
+        <Perimeter padding={0} onBreach={this.fire} >
+          <ul className="results">
+          {
+            this.state.results.map((v, i) => {
+              return(
+                <Ticket name={v} index={i} />
+              )
+            })
+          }
+          </ul>
+      </Perimeter> : <div className="emptyNotif">Nothing Here...</div>
+      }
       </div>
     );
   }
